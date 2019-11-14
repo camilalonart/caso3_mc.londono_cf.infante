@@ -1,4 +1,4 @@
-package clienteConSeguridad;
+package clienteSinSeguridad;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -32,7 +32,7 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
-public class Protocolo {
+public class ProtocoloSS {
 
 	public static void procedimiento(BufferedReader consoleReader, PrintWriter clientWriter, BufferedReader clientReader, Cliente c) {
 
@@ -43,7 +43,7 @@ public class Protocolo {
 
 			clientWriter.println("HOLA");
 			protocolLine = clientReader.readLine();
-
+			
 			if(protocolLine.equals("OK")) 
 			{
 
@@ -116,32 +116,22 @@ public class Protocolo {
 
 					//Se obtiene llave publica del servidor	
 					PublicKey llavePubServer = certificadoServer.getPublicKey();
-
+					
 					//Se crea la llave simetrica
 					KeyGenerator keygen = KeyGenerator.getInstance(symmetricAlgorithm);
 					keygen.init(secretKeySize);
 					SecretKey symmetricKey = keygen.generateKey();
 
-					//Cifrado respecto a la llave publica del servidor
-					Cipher cifrador = Cipher.getInstance(asymmetricAlgorithm);
-					byte[] llaveSecretaEnBytes = symmetricKey.getEncoded();
-					cifrador.init(Cipher.ENCRYPT_MODE, llavePubServer);
-					byte[] byteCifradoLlaveSimetrica = cifrador.doFinal(llaveSecretaEnBytes);
-
 					//envio de llave simetrica cifrada con publica del servidor
-					clientWriter.println(printBase64Binary(byteCifradoLlaveSimetrica));
+					clientWriter.println(symmetricKey);
 					String reto = Cliente.setClave();
 					clientWriter.println(reto);
 
-					//Mensaje que envia el servidor cifrado con llave simetrica
+					//Reto que envia el servidor
 					protocolLine = clientReader.readLine();
 
 					//Se desencripta el reto que envia de vuelta el servidor para ver si es la misma llave simetrica que generamos
-					cifrador = Cipher.getInstance(symmetricAlgorithm);
-					cifrador.init(Cipher.DECRYPT_MODE, symmetricKey);
-					byte[] descifrado = parserBase64Binary(protocolLine);
-					byte[] retoEnByte  = cifrador.doFinal(descifrado);
-					String retoServidor = printBase64Binary(retoEnByte);
+					String retoServidor = protocolLine;
 
 					//verificamos igualdad entre el reto generado por cliente y el reto que envia el servidor
 
@@ -160,57 +150,46 @@ public class Protocolo {
 					if(continuar) 
 					{
 						//Generamos los datos
-//						String datos = Cliente.getCedula();
-//						String clave = Cliente.getClave();
+						String datos = c.getCedula();
+						String clave = c.getClave();
 						
-						byte[] datosEnBytes = parserBase64Binary(c.getCedula());
-						byte[] claveEnBytes = parserBase64Binary(c.getClave());
+//						byte[] datosEnBytes = parserBase64Binary(c.getCedula());
+//						byte[] claveEnBytes = parserBase64Binary(c.getClave());
 
-						cifrador = Cipher.getInstance(symmetricAlgorithm);
-						cifrador.init(Cipher.ENCRYPT_MODE, symmetricKey);
-						byteCifradoLlaveSimetrica = cifrador.doFinal(datosEnBytes);
-						clientWriter.println(printBase64Binary(byteCifradoLlaveSimetrica));
+						//Se envia la cedula hacia el servidor
+						clientWriter.println(datos);
 						
-						cifrador = Cipher.getInstance(symmetricAlgorithm);
-						cifrador.init(Cipher.ENCRYPT_MODE, symmetricKey);
-						byteCifradoLlaveSimetrica = cifrador.doFinal(claveEnBytes);
-						clientWriter.println(printBase64Binary(byteCifradoLlaveSimetrica));
+						//Se envia la clave hacia el servidor
+						clientWriter.println(clave);
 						
 						//Valor de monto ahorro que responde el servidor
 						protocolLine = clientReader.readLine();
-						cifrador = Cipher.getInstance(symmetricAlgorithm);
-						cifrador.init(Cipher.DECRYPT_MODE, symmetricKey);
-						descifrado = parserBase64Binary(protocolLine);
-						byte[] montoEnByte  = cifrador.doFinal(descifrado);
-						String montoCliente = printBase64Binary(montoEnByte);
+						String montoCliente = protocolLine;
 						System.out.println("El monto es de " + montoCliente + " COP");
 						
 						//Se descifra con la llave publica del servidor
 						protocolLine = clientReader.readLine();
-						cifrador = Cipher.getInstance(asymmetricAlgorithm);
-						cifrador.init(Cipher.DECRYPT_MODE, llavePubServer);
-						descifrado = parserBase64Binary(protocolLine);
-						byte[] hMacCifradoEnBytes  = cifrador.doFinal(descifrado);
-						String hMac = printBase64Binary(hMacCifradoEnBytes);
+
+						String hashValor = protocolLine;
 						
 						//HMAC de los datos
 //						long tiempoInicial = System.currentTimeMillis();
 						Mac mac = Mac.getInstance(macOption);
 						mac.init(symmetricKey);
 
-						byte[] bytesHMacEncrypt = mac.doFinal(montoEnByte);
+						byte[] bytesHMacEncrypt = mac.doFinal(parserBase64Binary(montoCliente));
 //						long tiempoFinal = System.currentTimeMillis();
 //						System.out.println("Tiempo de cifrado mac es: " + (tiempoFinal - tiempoInicial) + "ms");
-						String hashCifradoenString = printBase64Binary(bytesHMacEncrypt);
+						String hashEnString = printBase64Binary(bytesHMacEncrypt);
 
-						if(hMac.equals(hashCifradoenString))
+						if(hashValor.equals(hashEnString))
 						{
 							clientWriter.println(Cliente.OK);
 							System.out.println("Consulta finalizada.");
 						}
 						else
 						{
-							System.out.println("Error. El hmac calculado no es igual al que se recibio");
+							System.out.println("Error. El hash calculado no es igual al que se recibio");
 							clientWriter.println(Cliente.ERROR);
 						}
 					}

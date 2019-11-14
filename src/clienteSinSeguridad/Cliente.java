@@ -1,4 +1,4 @@
-package clienteConSeguridad;
+package clienteSinSeguridad;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -116,7 +116,7 @@ public class Cliente extends Thread{
 				clave = pclave+="000";
 			}
 			
-			ProtocoloCS.procedimiento(lectorC, pw, bf, c);
+			ProtocoloSS.procedimiento(lectorC, pw, bf, c);
 			
 			lectorC.close();
 			bf.close();
