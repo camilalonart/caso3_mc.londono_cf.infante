@@ -1,4 +1,4 @@
-package clienteConSeguridad;
+package clienteProtocolos;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -11,6 +11,7 @@ public class Cliente extends Thread{
 	public static final int PUERTO = 8000;
 	private String cedula;
 	private String clave;
+	private int protocolo;
 
 	// Authentication codes for algorithms
 	public static final String AES = "AES";
@@ -23,6 +24,10 @@ public class Cliente extends Thread{
 
 	public static final String ERROR = "ERROR";
 	public static final String OK = "OK";
+	
+	public Cliente(int pProtocol){
+		protocolo = pProtocol;
+	}
 
 
 	public String getClave() {
@@ -92,28 +97,47 @@ public class Cliente extends Thread{
 			BufferedReader bf = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			BufferedReader lectorC = new BufferedReader(new InputStreamReader(System.in));
 			
-			System.out.println("Introduzca su cedula:");
-			String pcedula = lectorC.readLine();
-			if(pcedula.length() % 4 == 0) {
-				cedula = pcedula;
-			}else if(pcedula.length() % 4 == 3) {
-				cedula = pcedula+="0";
-			}else if(pcedula.length() % 4 == 2) {
-				cedula = pcedula+="00";
-			}else if(pcedula.length() % 4 == 1) {
-				cedula = pcedula+="000";
-			}
+//			System.out.println("Introduzca su cedula:");
+//			String pcedula = lectorC.readLine();
+//			if(pcedula.length() % 4 == 0) {
+//				cedula = pcedula;
+//			}else if(pcedula.length() % 4 == 3) {
+//				cedula = pcedula+="0";
+//			}else if(pcedula.length() % 4 == 2) {
+//				cedula = pcedula+="00";
+//			}else if(pcedula.length() % 4 == 1) {
+//				cedula = pcedula+="000";
+//			}
 			
-			System.out.println("Introduzca su clave:");
-			String pclave = lectorC.readLine();
-			if(pclave.length() % 4 == 0) {
-				clave = pclave;
-			}else if(pclave.length() % 4 == 3) {
-				clave = pclave+="0";
-			}else if(pclave.length() % 4 == 2) {
-				clave = pclave+="00";
-			}else if(pclave.length() % 4 == 1) {
-				clave = pclave+="000";
+//			System.out.println("Introduzca su clave:");
+//			String pclave = lectorC.readLine();
+//			if(pclave.length() % 4 == 0) {
+//				clave = pclave;
+//			}else if(pclave.length() % 4 == 3) {
+//				clave = pclave+="0";
+//			}else if(pclave.length() % 4 == 2) {
+//				clave = pclave+="00";
+//			}else if(pclave.length() % 4 == 1) {
+//				clave = pclave+="000";
+//			}
+			cedula = getCedula();
+			clave = getClave();
+			switch (protocolo) {
+			case 1:		
+				ProtocoloSS.procedimiento(lectorC, pw, bf, c);
+				break;
+
+			case 2:
+				try
+				{
+					ProtocoloCS.procedimiento(lectorC, pw, bf, c);		
+					break;
+
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+				}
 			}
 			
 			ProtocoloCS.procedimiento(lectorC, pw, bf, c);
@@ -129,9 +153,5 @@ public class Cliente extends Thread{
 
 	}
 
-	public static void main(String[] args) {
-		Cliente c = new Cliente();
-		c.start();
-	}
 
 }
