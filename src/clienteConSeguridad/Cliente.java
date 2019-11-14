@@ -1,4 +1,4 @@
-package caso2_mc.londono_cf.infante;
+package clienteConSeguridad;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
