@@ -27,10 +27,12 @@ import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.jcajce.provider.symmetric.ARC4.Base;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+
 
 public class ProtocoloCS {
 
@@ -140,7 +142,9 @@ public class ProtocoloCS {
 					cifrador = Cipher.getInstance(symmetricAlgorithm);
 					cifrador.init(Cipher.DECRYPT_MODE, symmetricKey);
 					byte[] descifrado = parserBase64Binary(protocolLine);
-					byte[] retoEnByte  = cifrador.doFinal(descifrado);
+					 byte[] base64decodedTokenArr = org.bouncycastle.util.encoders.Base64.decode(descifrado);
+					 byte[] retoEnByte = cifrador.doFinal(base64decodedTokenArr);
+					//byte[] retoEnByte  = cifrador.doFinal(descifrado);
 					String retoServidor = printBase64Binary(retoEnByte);
 
 					//verificamos igualdad entre el reto generado por cliente y el reto que envia el servidor
