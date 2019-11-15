@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.Random;
 
 import javax.crypto.SecretKey;
@@ -148,7 +149,9 @@ public class D extends Thread {
 				byte[] llaveSimetrica = S.ad(
 						toByteArray(linea), 
 						keyPairServidor.getPrivate(), algoritmos[2] );
+//				byte[] llavesita = Base64.getDecoder().decode(toHexString(llaveSimetrica));
 				SecretKey simetrica = new SecretKeySpec(llaveSimetrica, 0, llaveSimetrica.length, algoritmos[1]);
+//				SecretKey simetrica = new SecretKeySpec(llavesita, 0, llavesita.length, algoritmos[1]);
 				cadenas[3] = dlg + "recibio y creo llave simetrica. continuando.";
 				System.out.println(cadenas[3]);
 				
@@ -167,7 +170,7 @@ public class D extends Thread {
 					System.out.println(cadenas[4]);
 				} else {
 					sc.close();
-					throw new Exception(dlg + ERROR + "en confirmacion de llave simetrica." + REC + "-terminando.");
+					throw new Exception(dlg + ERROR + " en confirmacion de llave simetrica." + REC + "-terminando.");
 				}
 				P.registrarDurante(P.getSystemCpuLoad());
 

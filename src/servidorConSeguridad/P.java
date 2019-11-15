@@ -122,6 +122,7 @@ public class P {
 		System.out.println(MAESTRO + "Guardando información en archivo");
 		generarCSV();
 		System.out.println(MAESTRO + "Información guardada éxitosamente");
+		scanner.close();
 	}
 
 	public static void registrarAntes(double systemCpuLoad) {

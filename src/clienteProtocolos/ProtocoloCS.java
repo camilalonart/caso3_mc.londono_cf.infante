@@ -12,6 +12,7 @@ import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.Date;
 
 import javax.crypto.Cipher;
@@ -127,6 +128,8 @@ public class ProtocoloCS {
 					//Cifrado respecto a la llave publica del servidor
 					Cipher cifrador = Cipher.getInstance(asymmetricAlgorithm);
 					byte[] llaveSecretaEnBytes = symmetricKey.getEncoded();
+//					String encodedKey = Base64.getEncoder().encodeToString(symmetricKey.getEncoded());
+//					byte[] llaveSecretaEnBytes = parserBase64Binary(encodedKey);
 					cifrador.init(Cipher.ENCRYPT_MODE, llavePubServer);
 					byte[] byteCifradoLlaveSimetrica = cifrador.doFinal(llaveSecretaEnBytes);
 
@@ -137,13 +140,13 @@ public class ProtocoloCS {
 
 					//Mensaje que envia el servidor cifrado con llave simetrica
 					protocolLine = clientReader.readLine();
-
 					//Se desencripta el reto que envia de vuelta el servidor para ver si es la misma llave simetrica que generamos
 					cifrador = Cipher.getInstance(symmetricAlgorithm);
 					cifrador.init(Cipher.DECRYPT_MODE, symmetricKey);
 					byte[] descifrado = parserBase64Binary(protocolLine);
-					 byte[] base64decodedTokenArr = org.bouncycastle.util.encoders.Base64.decode(descifrado);
-					 byte[] retoEnByte = cifrador.doFinal(base64decodedTokenArr);
+//					 byte[] base64decodedTokenArr = org.bouncycastle.util.encoders.Base64.decode(descifrado);
+//					 byte[] retoEnByte = cifrador.doFinal(base64decodedTokenArr);
+					byte[] retoEnByte = cifrador.doFinal(descifrado);
 					//byte[] retoEnByte  = cifrador.doFinal(descifrado);
 					String retoServidor = printBase64Binary(retoEnByte);
 
@@ -167,8 +170,8 @@ public class ProtocoloCS {
 //						String datos = Cliente.getCedula();
 //						String clave = Cliente.getClave();
 						
-						byte[] datosEnBytes = parserBase64Binary(c.getCedula());
-						byte[] claveEnBytes = parserBase64Binary(c.getClave());
+						byte[] datosEnBytes = parserBase64Binary(Cliente.setCedula());
+						byte[] claveEnBytes = parserBase64Binary(Cliente.setClave());
 
 						cifrador = Cipher.getInstance(symmetricAlgorithm);
 						cifrador.init(Cipher.ENCRYPT_MODE, symmetricKey);
