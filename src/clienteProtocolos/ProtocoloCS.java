@@ -113,10 +113,10 @@ public class ProtocoloCS {
 					byte[] certificadoServerEnBytes = parserBase64Binary(serverCertificate);
 					InputStream in = new ByteArrayInputStream(certificadoServerEnBytes);
 					X509Certificate certificadoServer = (X509Certificate) cf.generateCertificate(in);	
-
+					
 					//Se obtiene llave publica del servidor	
 					PublicKey llavePubServer = certificadoServer.getPublicKey();
-
+					
 					//Se crea la llave simetrica
 					KeyGenerator keygen = KeyGenerator.getInstance(symmetricAlgorithm);
 					keygen.init(secretKeySize);
