@@ -14,6 +14,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
+
 public class D extends Thread {
 
 	public static final String OK = "OK";
@@ -90,7 +91,8 @@ public class D extends Thread {
 
 				PrintWriter ac = new PrintWriter(sc.getOutputStream() , true);
 				BufferedReader dc = new BufferedReader(new InputStreamReader(sc.getInputStream()));
-
+				P.registrarAntes(P.getSystemCpuLoad());
+				
 				/***** Fase 1:  *****/
 				linea = dc.readLine();
 				cadenas[0] = "Fase1: ";
@@ -167,7 +169,8 @@ public class D extends Thread {
 					sc.close();
 					throw new Exception(dlg + ERROR + "en confirmacion de llave simetrica." + REC + "-terminando.");
 				}
-				
+				P.registrarDurante(P.getSystemCpuLoad());
+
 				/***** Fase 6:  *****/
 				linea = dc.readLine();				
 				byte[] ccByte = S.sd(
@@ -206,6 +209,9 @@ public class D extends Thread {
 					cadenas[7] = dlg + "Terminando con error" + linea;
 			        System.out.println(cadenas[7]);
 				}
+				P.registrarDurante(P.getSystemCpuLoad());
+				P.registrarTiempo(P.getSystemCpuLoad());
+
 		        sc.close();
 
 			    for (int i=0;i<numCadenas;i++) {
