@@ -9,7 +9,7 @@ import java.util.Random;
 public class Cliente extends Thread{
 
 	public static final int PUERTO = 8000;
-	private String cedula;
+	private static String cedula;
 	private String clave;
 	private int protocolo;
 
@@ -72,6 +72,7 @@ public class Cliente extends Thread{
 
 			sb.append(AlphaNumericString.charAt(index)); 
 		} 
+		cedula = sb.toString();
 
 		return sb.toString(); 
 	} 

@@ -17,7 +17,7 @@ public class Generator
 	
 	private int protocolo;
 	
-	private static int numberOfTasks=80;
+	private static int numberOfTasks=1;
 	
 	/**
 	 * Constructs a new Generator

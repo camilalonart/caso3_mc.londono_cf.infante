@@ -12,6 +12,7 @@ import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.Date;
 
 import javax.crypto.KeyGenerator;
@@ -55,43 +56,10 @@ public class ProtocoloSS {
 				//Se selecciona algoritmo simetrico
 				symmetricAlgorithm = Cliente.AES;
 
-				//			Random rand = new Random();
-				//			  int randomNum = rand.nextInt((2 - 1) + 1) + 1;
-				//			switch (randomNum) {
-				//			case 1:
-				//				symmetricAlgorithm = Cliente.AES;
-				//				break;
-				//			case 2:
-				//				symmetricAlgorithm = Cliente.BLOWFISH;
-				//				break;
-				//			default:
-				//				symmetricAlgorithm = Cliente.AES;
-				//				break;
-				//			}
-
 				String asymmetricAlgorithm = Cliente.RSA;
 
 				//seleccion de algoritmo HMAC
 				String macOption = Cliente.HMACSHA512;
-
-				//			randomNum = rand.nextInt((4 - 1) + 1) + 1;
-				//			switch (randomNum) {
-				//			case 1:
-				//				macOption = Cliente.HMACSHA1;
-				//				break;
-				//			case 2:
-				//				macOption = Cliente.HMACSHA256;
-				//
-				//				break;
-				//			case 3:
-				//				macOption = Cliente.HMACSHA384;
-				//				break;
-				//			case 4:
-				//				macOption = Cliente.HMACSHA512;
-				//				break;
-				//			default :
-				//				authOption = Cliente.HMACSHA512;
-				//			}
 
 				String algorithms = "ALGORITMOS:"+symmetricAlgorithm+":"+asymmetricAlgorithm+":"+macOption;
 
@@ -108,23 +76,14 @@ public class ProtocoloSS {
 					{
 						serverCertificate = protocolLine;
 					}
-
-					//Obtener llave publica servidor
-					CertificateFactory cf = CertificateFactory.getInstance("X.509");
-					byte[] certificadoServerEnBytes = parserBase64Binary(serverCertificate);
-					InputStream in = new ByteArrayInputStream(certificadoServerEnBytes);
-					X509Certificate certificadoServer = (X509Certificate) cf.generateCertificate(in);	
-
-					//Se obtiene llave publica del servidor	
-					PublicKey llavePubServer = certificadoServer.getPublicKey();
 					
 					//Se crea la llave simetrica
 					KeyGenerator keygen = KeyGenerator.getInstance(symmetricAlgorithm);
 					keygen.init(secretKeySize);
 					SecretKey symmetricKey = keygen.generateKey();
-
-					//envio de llave simetrica cifrada con publica del servidor
-					clientWriter.println(symmetricKey);
+					//envio de llave simetrica
+					String encodedKey = Base64.getEncoder().encodeToString(symmetricKey.getEncoded());
+					clientWriter.println(encodedKey);
 					String reto = Cliente.setClave();
 					clientWriter.println(reto);
 
@@ -151,11 +110,8 @@ public class ProtocoloSS {
 					if(continuar) 
 					{
 						//Generamos los datos
-						String datos = c.getCedula();
-						String clave = c.getClave();
-						
-//						byte[] datosEnBytes = parserBase64Binary(c.getCedula());
-//						byte[] claveEnBytes = parserBase64Binary(c.getClave());
+						String datos = Cliente.setCedula();
+						String clave = Cliente.setClave();
 
 						//Se envia la cedula hacia el servidor
 						clientWriter.println(datos);
@@ -172,7 +128,7 @@ public class ProtocoloSS {
 						protocolLine = clientReader.readLine();
 
 						String hashValor = protocolLine;
-						
+												
 						//HMAC de los datos
 //						long tiempoInicial = System.currentTimeMillis();
 						Mac mac = Mac.getInstance(macOption);
@@ -182,6 +138,7 @@ public class ProtocoloSS {
 //						long tiempoFinal = System.currentTimeMillis();
 //						System.out.println("Tiempo de cifrado mac es: " + (tiempoFinal - tiempoInicial) + "ms");
 						String hashEnString = printBase64Binary(bytesHMacEncrypt);
+						
 
 						if(hashValor.equals(hashEnString))
 						{

@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.Random;
 
 import javax.crypto.SecretKey;
@@ -144,10 +145,7 @@ public class D extends Thread {
 				//Recibir llave simetrica
 				cadenas[3] = "";
 				linea = dc.readLine();
-//				byte[] llaveSimetrica = S.ad(
-//						toByteArray(linea), 
-//						keyPairServidor.getPrivate(), algoritmos[2] );
-				byte[] llaveSimetrica = toByteArray(linea);
+				byte[] llaveSimetrica = Base64.getDecoder().decode(linea);
 				SecretKey simetrica = new SecretKeySpec(llaveSimetrica, 0, llaveSimetrica.length, algoritmos[1]);
 				cadenas[3] = dlg + "recibio y creo llave simetrica. continuando.";
 				System.out.println(cadenas[3]);
@@ -157,11 +155,10 @@ public class D extends Thread {
 				cadenas[4]="";
 				linea = dc.readLine();
 				System.out.println(dlg + "Recibio reto del cliente:-" + linea + "-");
-//				byte[] retoByte = toByteArray(linea);
-//				byte [ ] ciphertext1 = S.se(retoByte, simetrica, algoritmos[1]);
-				ac.println(linea);
+				String reto = linea;
+				ac.println(reto);
 				System.out.println(dlg + "envio reto al cliente. continuado.");
-
+				
 				linea = dc.readLine();
 				if ((linea.equals(OK))) {
 					cadenas[4] = dlg + "recibio confirmacion del cliente:"+ linea +"-continuado.";
@@ -172,34 +169,30 @@ public class D extends Thread {
 				}
 				
 				/***** Fase 6:  *****/
-				//Recibe la cedula y la clave
+				//Recibe la cedula
 				linea = dc.readLine();				
-				byte[] ccByte = S.sd(
-						toByteArray(linea), simetrica, algoritmos[1]);
-				String cc = toHexString(ccByte);
+				String cc = linea;
 				System.out.println(dlg + "recibio cc y descifro:-" + cc + "-continuado.");
 				
+				//Recibe clave
 				linea = dc.readLine();				
-				byte[] claveByte = S.sd(
-						toByteArray(linea), simetrica, algoritmos[1]);
-				String clave = toHexString(claveByte);
+				String clave = linea;
 				System.out.println(dlg + "recibio clave y descifro:-" + clave + "-continuado.");
 				cadenas[5] = dlg + "recibio cc y clave - continuando";
 				
+				//Envia valor hacia el cliente
 				Random rand = new Random(); 
 				int valor = rand.nextInt(1000000);
 				String strvalor = valor+"";
 				while (strvalor.length()%4!=0) strvalor += 0;
-				byte[] valorByte = toByteArray(strvalor);
-				byte [ ] ciphertext2 = S.se(valorByte, simetrica, algoritmos[1]);
-				ac.println(toHexString(ciphertext2));
+				ac.println(strvalor);
 				cadenas[6] = dlg + "envio valor "+strvalor+" cifrado con llave simetrica al cliente. continuado.";
 				System.out.println(cadenas[6]);
 		        
+				byte[] valorByte = toByteArray(strvalor);
 				byte [] hmac = S.hdg(valorByte, simetrica, algoritmos[3]);
-				byte[] recibo = S.ae(hmac, keyPairServidor.getPrivate(), algoritmos[2]);
-				ac.println(toHexString(recibo));
-				System.out.println(dlg + "envio hmac cifrado con llave privada del servidor. continuado.");
+				ac.println(toHexString(hmac));
+				System.out.println(dlg + "envio hash. continuado.");
 				
 				cadenas[7] = "";
 				linea = dc.readLine();	
