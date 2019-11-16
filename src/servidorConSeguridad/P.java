@@ -56,10 +56,10 @@ public class P {
 	{
 		PrintWriter pw = new PrintWriter("./resultadosConSeguridad ("+ (new Date()).toString().replaceAll(":", ".") + ").csv");
 		String perdidas = "Número Conexiones Perdidas" + conexionesperdidas;
-		pw.println(tiempo + "Tiempo de la Transacción");
-		pw.println(antes + "% de Uso Antes");
-		pw.println(durante+ "% de Uso Durante");
-		pw.println(despues+ "% de Uso Despues");
+		pw.println(tiempo + " Tiempo de la Transacción");
+		pw.println(antes + "% Antes");
+		pw.println(durante+ "% Durante");
+		pw.println(despues+ "% Despues");
 		pw.println(perdidas);
 		
 		pw.close();

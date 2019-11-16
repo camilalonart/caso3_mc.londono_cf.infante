@@ -1,8 +1,40 @@
+delegado 2: recibio-HOLA-continuando.
+delegado 4: recibio-HOLA-continuando.
+delegado 2: recibio-ALGORITMOS:AES:RSA:HMACSHA512-continuando.
+delegado 2: envio certificado del servidor. continuando.
+delegado 2: recibio y creo llave simetrica. continuando.
+delegado 1: recibio-HOLA-continuando.
+delegado 2: recibio confirmacion del cliente:OK-continuado.
+delegado 2: recibio cc y clave - continuando
+delegado 2: envio valor 38220500 cifrado con llave simetrica al cliente. continuado.
+delegado 1: recibio-ALGORITMOS:AES:RSA:HMACSHA512-continuando.
+delegado 2: Terminando con errorHOLA
+delegado 1: envio certificado del servidor. continuando.
+delegado 1: recibio y creo llave simetrica. continuando.
+delegado 1: recibio confirmacion del cliente:OK-continuado.
+delegado 1: recibio cc y clave - continuando
+delegado 1: envio valor 77043200 cifrado con llave simetrica al cliente. continuado.
+delegado 1: Terminando con errorHOLA
+delegado 4: recibio-ALGORITMOS:AES:RSA:HMACSHA512-continuando.
+delegado 4: envio certificado del servidor. continuando.
+delegado 4: recibio y creo llave simetrica. continuando.
+delegado 4: recibio confirmacion del cliente:OK-continuado.
+delegado 4: recibio cc y clave - continuando
+delegado 4: envio valor 51123300 cifrado con llave simetrica al cliente. continuado.
+delegado 4: Terminando con errorHOLA
+delegado 3: recibio-HOLA-continuando.
+delegado 3: recibio-ALGORITMOS:AES:RSA:HMACSHA512-continuando.
+delegado 3: envio certificado del servidor. continuando.
+delegado 3: recibio y creo llave simetrica. continuando.
 delegado 0: recibio-HOLA-continuando.
+delegado 3: recibio confirmacion del cliente:OK-continuado.
+delegado 3: recibio cc y clave - continuando
+delegado 3: envio valor 49685400 cifrado con llave simetrica al cliente. continuado.
+delegado 3: Terminando con errorHOLA
 delegado 0: recibio-ALGORITMOS:AES:RSA:HMACSHA512-continuando.
 delegado 0: envio certificado del servidor. continuando.
 delegado 0: recibio y creo llave simetrica. continuando.
 delegado 0: recibio confirmacion del cliente:OK-continuado.
 delegado 0: recibio cc y clave - continuando
-delegado 0: envio valor 34673800 cifrado con llave simetrica al cliente. continuado.
-delegado 0: Terminando exitosamente.OK
+delegado 0: envio valor 78926700 cifrado con llave simetrica al cliente. continuado.
+delegado 0: Terminando con errorHOLA

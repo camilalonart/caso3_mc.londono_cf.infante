@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Random;
 
 import javax.crypto.SecretKey;
@@ -92,8 +93,8 @@ public class D extends Thread {
 
 				PrintWriter ac = new PrintWriter(sc.getOutputStream() , true);
 				BufferedReader dc = new BufferedReader(new InputStreamReader(sc.getInputStream()));
-				P.registrarAntes(P.getSystemCpuLoad());
-				
+				double antes = P.getSystemCpuLoad();
+				double tiempo1 = System.nanoTime();
 				/***** Fase 1:  *****/
 				linea = dc.readLine();
 				cadenas[0] = "Fase1: ";
@@ -172,7 +173,6 @@ public class D extends Thread {
 					sc.close();
 					throw new Exception(dlg + ERROR + " en confirmacion de llave simetrica." + REC + "-terminando.");
 				}
-				P.registrarDurante(P.getSystemCpuLoad());
 
 				/***** Fase 6:  *****/
 				linea = dc.readLine();				
@@ -187,6 +187,10 @@ public class D extends Thread {
 				String clave = toHexString(claveByte);
 				System.out.println(dlg + "recibio clave y descifro:-" + clave + "-continuado.");
 				cadenas[5] = dlg + "recibio cc y clave - continuando";
+				
+				double durante = P.getSystemCpuLoad();
+				ac.println(durante);
+
 				
 				Random rand = new Random(); 
 				int valor = rand.nextInt(1000000);
@@ -212,9 +216,26 @@ public class D extends Thread {
 					cadenas[7] = dlg + "Terminando con error" + linea;
 			        System.out.println(cadenas[7]);
 				}
-				P.registrarDurante(P.getSystemCpuLoad());
-				P.registrarTiempo(P.getSystemCpuLoad());
+				
+				double despues = P.getSystemCpuLoad();
+				double tiempo2 = System.nanoTime();
+				double tiempototal = tiempo2 - tiempo1;
+				
+				PrintWriter pw = new PrintWriter("./resultadosConSeguridad ("+ (new Date()).toString().replaceAll(":", ".") + ").csv");
+				pw.println(tiempototal + " Tiempo de la Transacción");
+				pw.println(antes + " % Antes");
+				pw.println(durante+ " % Durante");
+				pw.println(despues+ " % Despues");
+				
+				pw.close();
+				
+				System.out.println("———————————————————————————————————");
 
+				System.out.println(tiempototal+"Tiempo de la Transacción");
+				System.out.println(antes + " % Antes");
+				System.out.println(durante+ " % Durante");
+				System.out.println(despues+ " % Despues");
+				System.out.println("———————————————————————————————————");
 		        sc.close();
 
 			    for (int i=0;i<numCadenas;i++) {
