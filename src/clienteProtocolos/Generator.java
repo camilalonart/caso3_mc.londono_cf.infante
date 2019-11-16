@@ -16,19 +16,16 @@ public class Generator
 	private LoadGenerator generator;
 	
 	private int protocolo;
-	
-	private static int numberOfTasks=5;
-	
+		
 	/**
 	 * Constructs a new Generator
 	 */
-	public Generator(int pProtocol) 
+	public Generator(int pProtocol, int taskNum, int gapTime) 
 	{
 		protocolo = pProtocol;
 		Task work = createTask();
 		
-		 int gapBetweenTasks = 100;
-		generator = new LoadGenerator("Client - Server Load Test", numberOfTasks, work, gapBetweenTasks);
+		generator = new LoadGenerator("Client - Server Load Test", taskNum, work, gapTime);
 		generator.generate();
 		
 	}
@@ -55,21 +52,19 @@ public class Generator
 		try
 		{
 			int option = Integer.parseInt(bf.readLine());
+			System.out.println("Ingrese numero de transacciones a ejecutar");
+			int taskNum = Integer.parseInt(bf.readLine());
+			System.out.println("Ingrese tiempo gap (ms) entre cada transaccion");
+			int gapTime = Integer.parseInt(bf.readLine());
 			@SuppressWarnings("unused")
-			Generator gen = new Generator(option);
-
+			Generator gen = new Generator(option, taskNum, gapTime);
+			bf.close();
 		}
 		catch(Exception e)
 		{
 			System.err.println("ALGO FALLO EN LA LECTURA DEL PROTOCOLO ESCOGIDO");
 		}
 
-	}
-	public static int getNumberOfTasks() {
-		return numberOfTasks;
-	}
-	public static void setNumberOfTasks(int numberOfTasks) {
-		Generator.numberOfTasks = numberOfTasks;
 	}
 
 }

@@ -80,9 +80,8 @@ public class P {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());		
 		// Crea el archivo de log
 		conexionesPerdidas = 0;
-		Scanner scanner = new Scanner(System.in);
 		System.out.println("Ingrese el tamano del pool de threads");
-		int size = Integer.parseInt(scanner.nextLine());
+		int size = Integer.parseInt(br.readLine());
 		
 		File file = null;
 		keyPairServidor = S.grsa();
@@ -123,7 +122,7 @@ public class P {
 		System.out.println(MAESTRO + "Guardando información en archivo");
 		generarCSV();
 		System.out.println(MAESTRO + "Información guardada éxitosamente");
-		scanner.close();
+		br.close();
 	}
 
 	public static synchronized void registrarConexionesPerdidas() {
