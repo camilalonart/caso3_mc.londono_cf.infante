@@ -29,11 +29,11 @@ public class P {
 	private static final String MAESTRO = "MAESTRO: ";
 	private static X509Certificate certSer; /* acceso default */
 	private static KeyPair keyPairServidor; /* acceso default */
-	private static int conexionesperdidas;
-	public static double antes;
-	public static double durante;
-	public static double despues;
-	public static double tiempo;
+	private static int conexionesPerdidas;
+	public static String antes = "% Antes";
+	public static String durante = "% Durante";
+	public static String despues = "% Despues";
+	public static String tiempo = "Tiempo de transaccion (ms)";
 	
 	public static double getSystemCpuLoad() throws Exception {
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -55,11 +55,11 @@ public class P {
 	private static void generarCSV() throws FileNotFoundException
 	{
 		PrintWriter pw = new PrintWriter("./resultadosConSeguridad ("+ (new Date()).toString().replaceAll(":", ".") + ").csv");
-		String perdidas = "Numero Conexiones Perdidas: " + conexionesperdidas;
-		pw.println(tiempo + " Tiempo de la Transaccion");
-		pw.println(antes + "% Antes");
-		pw.println(durante+ "% Durante");
-		pw.println(despues+ "% Despues");
+		String perdidas = "Conexiones perdidas" + ";" + conexionesPerdidas;
+		pw.println(tiempo);
+		pw.println(antes);
+		pw.println(durante);
+		pw.println(despues);
 		pw.println(perdidas);
 		
 		pw.close();
@@ -79,7 +79,7 @@ public class P {
 		// Adiciona la libreria como un proveedor de seguridad.
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());		
 		// Crea el archivo de log
-		conexionesperdidas = 0;
+		conexionesPerdidas = 0;
 		Scanner scanner = new Scanner(System.in);
 		System.out.println("Ingrese el tamano del pool de threads");
 		int size = Integer.parseInt(scanner.nextLine());
@@ -88,14 +88,14 @@ public class P {
 		keyPairServidor = S.grsa();
 		certSer = S.gc(keyPairServidor);
 		String ruta = "./resultados.txt";
-		String rutalog = "./logs.txt";
+//		String rutalog = "./logs.txt";
 
         file = new File(ruta);
         if (!file.exists()) {
             file.createNewFile();
         }
-        FileWriter fw = new FileWriter(file);
-        fw.close();
+//        FileWriter fw = new FileWriter(file);
+//        fw.close();
         
         D.init(certSer, keyPairServidor, file);
         
@@ -110,7 +110,8 @@ public class P {
 				Socket sc = ss.accept();
 				System.out.println(MAESTRO + "Cliente " + i + " aceptado.");
 				D d = new D(sc,i);
-				d.start();
+				pool.execute(d);
+//				d.start();
 			} catch (IOException e) {
 				System.out.println(MAESTRO + "Error creando el socket cliente.");
 				e.printStackTrace();
@@ -125,18 +126,22 @@ public class P {
 		scanner.close();
 	}
 
-	public static void registrarAntes(double systemCpuLoad) {
-		antes = systemCpuLoad;
-	}
-	public static void registrarDurante(double systemCpuLoad) {
-		durante = systemCpuLoad;
-	}
-	public static void registrarDespues(double systemCpuLoad) {
-		despues = systemCpuLoad;
+	public static synchronized void registrarConexionesPerdidas() {
+		conexionesPerdidas++;
 	}
 
-	public static void registrarTiempo(double systemCpuLoad) {
-		tiempo = systemCpuLoad;
+	public static synchronized void registrarAntes(double systemCpuLoad) {
+		antes += ";" + systemCpuLoad;
+	}
+	public static synchronized void registrarDurante(double systemCpuLoad) {
+		durante += ";" + systemCpuLoad;
+	}
+	public static synchronized void registrarDespues(double systemCpuLoad) {
+		despues += ";" + systemCpuLoad;
+	}
+
+	public static synchronized void registrarTiempo(long time) {
+		tiempo += ";" + time;
 	}
 	
 }
