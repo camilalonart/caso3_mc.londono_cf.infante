@@ -37,6 +37,7 @@ public class D extends Thread {
 	private static File file;
 	private static X509Certificate certSer;
 	private static KeyPair keyPairServidor;
+	private int delegado;
 	
 	public static void init(X509Certificate pCertSer, KeyPair pKeyPairServidor, File pFile) {
 		certSer = pCertSer;
@@ -47,6 +48,7 @@ public class D extends Thread {
 	public D (Socket csP, int idP) {
 		sc = csP;
 		dlg = new String("delegado " + idP + ": ");
+		delegado = idP;
 		try {
 		mybyte = new byte[520]; 
 		mybyte = certSer.getEncoded();
@@ -94,7 +96,7 @@ public class D extends Thread {
 				PrintWriter ac = new PrintWriter(sc.getOutputStream() , true);
 				BufferedReader dc = new BufferedReader(new InputStreamReader(sc.getInputStream()));
 				double antes = P.getSystemCpuLoad();
-				double tiempo1 = System.nanoTime();
+				double tiempo1 = System.currentTimeMillis();
 				/***** Fase 1:  *****/
 				linea = dc.readLine();
 				cadenas[0] = "Fase1: ";
@@ -150,16 +152,14 @@ public class D extends Thread {
 				byte[] llaveSimetrica = S.ad(
 						toByteArray(linea), 
 						keyPairServidor.getPrivate(), algoritmos[2] );
-//				byte[] llavesita = Base64.getDecoder().decode(toHexString(llaveSimetrica));
 				SecretKey simetrica = new SecretKeySpec(llaveSimetrica, 0, llaveSimetrica.length, algoritmos[1]);
-//				SecretKey simetrica = new SecretKeySpec(llavesita, 0, llavesita.length, algoritmos[1]);
 				cadenas[3] = dlg + "recibio y creo llave simetrica. continuando.";
 				System.out.println(cadenas[3]);
 				
 				/***** Fase 5:  *****/
 				cadenas[4]="";
 				linea = dc.readLine();
-				System.out.println(dlg + "Recibio reto del cliente:-" + linea + "-");
+				System.out.println(dlg + "recibio reto del cliente:-" + linea + "-");
 				byte[] retoByte = toByteArray(linea);
 				byte [ ] ciphertext1 = S.se(retoByte, simetrica, algoritmos[1]);
 				ac.println(toHexString(ciphertext1));
@@ -187,10 +187,9 @@ public class D extends Thread {
 				String clave = toHexString(claveByte);
 				System.out.println(dlg + "recibio clave y descifro:-" + clave + "-continuado.");
 				cadenas[5] = dlg + "recibio cc y clave - continuando";
+				System.out.println(cadenas[5]);
 				
 				double durante = P.getSystemCpuLoad();
-				ac.println(durante);
-
 				
 				Random rand = new Random(); 
 				int valor = rand.nextInt(1000000);
@@ -206,23 +205,23 @@ public class D extends Thread {
 				byte[] recibo = S.ae(hmac, keyPairServidor.getPrivate(), algoritmos[2]);
 				ac.println(toHexString(recibo));
 				System.out.println(dlg + "envio hmac cifrado con llave privada del servidor. continuado.");
-				
 				cadenas[7] = "";
 				linea = dc.readLine();	
 				if (linea.equals(OK)) {
-					cadenas[7] = dlg + "Terminando exitosamente." + linea;
+					cadenas[7] = dlg + "Terminando exitosamente. " + linea;
 					System.out.println(cadenas[7]);
 				} else {
-					cadenas[7] = dlg + "Terminando con error" + linea;
+					cadenas[7] = dlg + "Terminando con error " + linea;
 			        System.out.println(cadenas[7]);
+			        linea = dc.readLine();
 				}
 				
 				double despues = P.getSystemCpuLoad();
-				double tiempo2 = System.nanoTime();
+				double tiempo2 = System.currentTimeMillis();
 				double tiempototal = tiempo2 - tiempo1;
 				
 				PrintWriter pw = new PrintWriter("./resultadosConSeguridad ("+ (new Date()).toString().replaceAll(":", ".") + ").csv");
-				pw.println(tiempototal + " Tiempo de la Transacción");
+				pw.println(tiempototal + "ms Tiempo de la transaccion");
 				pw.println(antes + " % Antes");
 				pw.println(durante+ " % Durante");
 				pw.println(despues+ " % Despues");
@@ -230,11 +229,11 @@ public class D extends Thread {
 				pw.close();
 				
 				System.out.println("———————————————————————————————————");
-
-				System.out.println(tiempototal+"Tiempo de la Transacción");
-				System.out.println(antes + " % Antes");
-				System.out.println(durante+ " % Durante");
-				System.out.println(despues+ " % Despues");
+				System.out.println("Delegado " + delegado);
+				System.out.println(tiempototal+"ms Tiempo de la transaccion");
+				System.out.println(antes + "% Antes");
+				System.out.println(durante+ "% Durante");
+				System.out.println(despues+ "% Despues");
 				System.out.println("———————————————————————————————————");
 		        sc.close();
 

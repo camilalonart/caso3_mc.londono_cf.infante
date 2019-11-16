@@ -9,11 +9,14 @@ import java.net.Socket;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Random;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+
+import servidorConSeguridad.P;
 
 public class D extends Thread {
 
@@ -35,6 +38,7 @@ public class D extends Thread {
 	private static File file;
 	private static X509Certificate certSer;
 	private static KeyPair keyPairServidor;
+	private int delegado;
 	
 	public static void init(X509Certificate pCertSer, KeyPair pKeyPairServidor, File pFile) {
 		certSer = pCertSer;
@@ -45,6 +49,7 @@ public class D extends Thread {
 	public D (Socket csP, int idP) {
 		sc = csP;
 		dlg = new String("delegado " + idP + ": ");
+		delegado = idP;
 		try {
 		mybyte = new byte[520]; 
 		mybyte = certSer.getEncoded();
@@ -91,7 +96,9 @@ public class D extends Thread {
 
 				PrintWriter ac = new PrintWriter(sc.getOutputStream() , true);
 				BufferedReader dc = new BufferedReader(new InputStreamReader(sc.getInputStream()));
-
+				double antes = P.getSystemCpuLoad();
+				double tiempo1 = System.currentTimeMillis();
+				
 				/***** Fase 1:  *****/
 				linea = dc.readLine();
 				cadenas[0] = "Fase1: ";
@@ -180,6 +187,8 @@ public class D extends Thread {
 				System.out.println(dlg + "recibio clave y descifro:-" + clave + "-continuado.");
 				cadenas[5] = dlg + "recibio cc y clave - continuando";
 				
+				double durante = P.getSystemCpuLoad();
+				
 				//Envia valor hacia el cliente
 				Random rand = new Random(); 
 				int valor = rand.nextInt(1000000);
@@ -203,6 +212,26 @@ public class D extends Thread {
 					cadenas[7] = dlg + "Terminando con error" + linea;
 			        System.out.println(cadenas[7]);
 				}
+				
+				double despues = P.getSystemCpuLoad();
+				double tiempo2 = System.currentTimeMillis();
+				double tiempototal = tiempo2 - tiempo1;
+				
+				PrintWriter pw = new PrintWriter("./resultadosSinSeguridad ("+ (new Date()).toString().replaceAll(":", ".") + ").csv");
+				pw.println(tiempototal + "ms Tiempo de la transaccion");
+				pw.println(antes + " % Antes");
+				pw.println(durante+ " % Durante");
+				pw.println(despues+ " % Despues");
+				
+				pw.close();
+				
+				System.out.println("———————————————————————————————————");
+				System.out.println("Delegado " + delegado);
+				System.out.println(tiempototal+"ms Tiempo de la transaccion");
+				System.out.println(antes + "% Antes");
+				System.out.println(durante+ "% Durante");
+				System.out.println(despues+ "% Despues");
+				System.out.println("———————————————————————————————————");
 		        sc.close();
 
 			    for (int i=0;i<numCadenas;i++) {

@@ -1,16 +1,12 @@
 package clienteProtocolos;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.Provider;
-import java.security.PublicKey;
 import java.security.Security;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.Date;
@@ -81,6 +77,7 @@ public class ProtocoloSS {
 					KeyGenerator keygen = KeyGenerator.getInstance(symmetricAlgorithm);
 					keygen.init(secretKeySize);
 					SecretKey symmetricKey = keygen.generateKey();
+					
 					//envio de llave simetrica
 					String encodedKey = Base64.getEncoder().encodeToString(symmetricKey.getEncoded());
 					clientWriter.println(encodedKey);
@@ -94,7 +91,6 @@ public class ProtocoloSS {
 					String retoServidor = protocolLine;
 
 					//verificamos igualdad entre el reto generado por cliente y el reto que envia el servidor
-
 					boolean continuar = false;	
 					if(retoServidor.equals(reto))
 					{

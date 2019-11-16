@@ -23,7 +23,6 @@ import javax.management.AttributeList;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import clienteProtocolos.Generator;
 import servidorSinSeguridad.P;
 import servidorSinSeguridad.D;
 
@@ -32,7 +31,6 @@ public class P {
 	private static final String MAESTRO = "MAESTRO: ";
 	private static X509Certificate certSer; /* acceso default */
 	private static KeyPair keyPairServidor; /* acceso default */
-	private static int totalActions;
 	private static int conexionesperdidas;
 	public static double antes;
 	public static double durante;
@@ -59,11 +57,11 @@ public class P {
 	private static void generarCSV() throws FileNotFoundException
 	{
 		PrintWriter pw = new PrintWriter("./resultadosSinSeguridad ("+ (new Date()).toString().replaceAll(":", ".") + ").csv");
-		String perdidas = "Número Conexiones Perdidas" + conexionesperdidas;
-		pw.println(tiempo + "Tiempo de la Transacción");
-		pw.println(antes + "% de Uso Antes");
-		pw.println(durante+ "% de Uso Durante");
-		pw.println(despues+ "% de Uso Despues");
+		String perdidas = "Numero Conexiones Perdidas: " + conexionesperdidas;
+		pw.println(tiempo + " Tiempo de la Transaccion");
+		pw.println(antes + "% Antes");
+		pw.println(durante+ "% Durante");
+		pw.println(despues+ "% Despues");
 		pw.println(perdidas);
 		
 		pw.close();
@@ -78,7 +76,7 @@ public class P {
 		BufferedReader br = new BufferedReader(isr);
 		System.out.println(MAESTRO + "Establezca puerto de conexion:");
 		int ip = Integer.parseInt(br.readLine());
-		System.out.println("Ingrese del tamano del pool de threads: ");
+		System.out.println("Ingrese el tamano del pool de threads");
 		int size = Integer.parseInt(br.readLine());
 		
 		System.out.println(MAESTRO + "Empezando servidor maestro en puerto " + ip);
@@ -88,6 +86,7 @@ public class P {
 		// Crea el archivo de log
 		File file = null;
 		keyPairServidor = S.grsa();
+		conexionesperdidas = 0;
 		certSer = S.gc(keyPairServidor);
 		String ruta = "./resultados.txt";
    
@@ -99,42 +98,6 @@ public class P {
         fw.close();
         
         D.init(certSer, keyPairServidor, file);
-        
-		// Crea el socket que escucha en el puerto seleccionado.
-//		ss = new ServerSocket(ip);
-//		System.out.println(MAESTRO + "Socket creado.");
-		
-//		totalActions = Integer.MAX_VALUE;
-//		for(int i = 0; i < totalActions; i++)
-//		{
-//			try 
-//			{
-//				Socket sc = ss.accept();
-//				executorService.execute(new Runnable() 
-//				{
-//					@Override
-//					public void run() 
-//					{	
-//						long idThread = Thread.currentThread().getId();
-//						System.out.println(MAESTRO + "Cliente " + idThread + " aceptado.");
-//						
-//						D d = new D(sc,(int)idThread);
-//						d.start();
-//						
-//
-//							totalActions = Generator.getNumberOfTasks();
-//					}
-//				});
-//
-//
-//					
-//			} 
-//			catch (IOException e) 
-//			{
-//				System.out.println(MAESTRO + "Error creando el socket cliente.");
-//				e.printStackTrace();
-//			}
-//		}
 		
 		ss = new ServerSocket(ip);
 		System.out.println(MAESTRO + "Socket creado.");
@@ -158,17 +121,20 @@ public class P {
 		System.out.println(MAESTRO + "Guardando información en archivo");
 		generarCSV();
 		System.out.println(MAESTRO + "Información guardada éxitosamente");
-        
-//		for (int i=0;true;i++) {
-//			try { 
-//				Socket sc = ss.accept();
-//				System.out.println(MAESTRO + "Cliente " + i + " aceptado.");
-//				D d = new D(sc,i);
-//				d.start();
-//			} catch (IOException e) {
-//				System.out.println(MAESTRO + "Error creando el socket cliente.");
-//				e.printStackTrace();
-//			}
-//		}
+
+	}
+	
+	public static void registrarAntes(double systemCpuLoad) {
+		antes = systemCpuLoad;
+	}
+	public static void registrarDurante(double systemCpuLoad) {
+		durante = systemCpuLoad;
+	}
+	public static void registrarDespues(double systemCpuLoad) {
+		despues = systemCpuLoad;
+	}
+
+	public static void registrarTiempo(double systemCpuLoad) {
+		tiempo = systemCpuLoad;
 	}
 }

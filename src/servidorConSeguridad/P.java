@@ -55,8 +55,8 @@ public class P {
 	private static void generarCSV() throws FileNotFoundException
 	{
 		PrintWriter pw = new PrintWriter("./resultadosConSeguridad ("+ (new Date()).toString().replaceAll(":", ".") + ").csv");
-		String perdidas = "Número Conexiones Perdidas" + conexionesperdidas;
-		pw.println(tiempo + " Tiempo de la Transacción");
+		String perdidas = "Numero Conexiones Perdidas: " + conexionesperdidas;
+		pw.println(tiempo + " Tiempo de la Transaccion");
 		pw.println(antes + "% Antes");
 		pw.println(durante+ "% Durante");
 		pw.println(despues+ "% Despues");
@@ -81,7 +81,7 @@ public class P {
 		// Crea el archivo de log
 		conexionesperdidas = 0;
 		Scanner scanner = new Scanner(System.in);
-		System.out.println("Ingrese del tamano del pool de threads  ");
+		System.out.println("Ingrese el tamano del pool de threads");
 		int size = Integer.parseInt(scanner.nextLine());
 		
 		File file = null;
@@ -137,7 +137,6 @@ public class P {
 
 	public static void registrarTiempo(double systemCpuLoad) {
 		tiempo = systemCpuLoad;
-		
 	}
 	
 }

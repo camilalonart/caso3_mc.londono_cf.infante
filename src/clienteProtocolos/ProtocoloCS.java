@@ -57,43 +57,10 @@ public class ProtocoloCS {
 				//Se selecciona algoritmo simetrico
 				symmetricAlgorithm = Cliente.AES;
 
-				//			Random rand = new Random();
-				//			  int randomNum = rand.nextInt((2 - 1) + 1) + 1;
-				//			switch (randomNum) {
-				//			case 1:
-				//				symmetricAlgorithm = Cliente.AES;
-				//				break;
-				//			case 2:
-				//				symmetricAlgorithm = Cliente.BLOWFISH;
-				//				break;
-				//			default:
-				//				symmetricAlgorithm = Cliente.AES;
-				//				break;
-				//			}
-
 				String asymmetricAlgorithm = Cliente.RSA;
 
 				//seleccion de algoritmo HMAC
 				String macOption = Cliente.HMACSHA512;
-
-				//			randomNum = rand.nextInt((4 - 1) + 1) + 1;
-				//			switch (randomNum) {
-				//			case 1:
-				//				macOption = Cliente.HMACSHA1;
-				//				break;
-				//			case 2:
-				//				macOption = Cliente.HMACSHA256;
-				//
-				//				break;
-				//			case 3:
-				//				macOption = Cliente.HMACSHA384;
-				//				break;
-				//			case 4:
-				//				macOption = Cliente.HMACSHA512;
-				//				break;
-				//			default :
-				//				authOption = Cliente.HMACSHA512;
-				//			}
 
 				String algorithms = "ALGORITMOS:"+symmetricAlgorithm+":"+asymmetricAlgorithm+":"+macOption;
 
@@ -128,8 +95,6 @@ public class ProtocoloCS {
 					//Cifrado respecto a la llave publica del servidor
 					Cipher cifrador = Cipher.getInstance(asymmetricAlgorithm);
 					byte[] llaveSecretaEnBytes = symmetricKey.getEncoded();
-//					String encodedKey = Base64.getEncoder().encodeToString(symmetricKey.getEncoded());
-//					byte[] llaveSecretaEnBytes = parserBase64Binary(encodedKey);
 					cifrador.init(Cipher.ENCRYPT_MODE, llavePubServer);
 					byte[] byteCifradoLlaveSimetrica = cifrador.doFinal(llaveSecretaEnBytes);
 
@@ -140,14 +105,12 @@ public class ProtocoloCS {
 
 					//Mensaje que envia el servidor cifrado con llave simetrica
 					protocolLine = clientReader.readLine();
+					
 					//Se desencripta el reto que envia de vuelta el servidor para ver si es la misma llave simetrica que generamos
 					cifrador = Cipher.getInstance(symmetricAlgorithm);
 					cifrador.init(Cipher.DECRYPT_MODE, symmetricKey);
 					byte[] descifrado = parserBase64Binary(protocolLine);
-//					 byte[] base64decodedTokenArr = org.bouncycastle.util.encoders.Base64.decode(descifrado);
-//					 byte[] retoEnByte = cifrador.doFinal(base64decodedTokenArr);
 					byte[] retoEnByte = cifrador.doFinal(descifrado);
-					//byte[] retoEnByte  = cifrador.doFinal(descifrado);
 					String retoServidor = printBase64Binary(retoEnByte);
 
 					//verificamos igualdad entre el reto generado por cliente y el reto que envia el servidor
@@ -167,9 +130,6 @@ public class ProtocoloCS {
 					if(continuar) 
 					{
 						//Generamos los datos
-//						String datos = Cliente.getCedula();
-//						String clave = Cliente.getClave();
-						
 						byte[] datosEnBytes = parserBase64Binary(Cliente.setCedula());
 						byte[] claveEnBytes = parserBase64Binary(Cliente.setClave());
 
@@ -201,13 +161,10 @@ public class ProtocoloCS {
 						String hMac = printBase64Binary(hMacCifradoEnBytes);
 						
 						//HMAC de los datos
-//						long tiempoInicial = System.currentTimeMillis();
 						Mac mac = Mac.getInstance(macOption);
 						mac.init(symmetricKey);
 
 						byte[] bytesHMacEncrypt = mac.doFinal(montoEnByte);
-//						long tiempoFinal = System.currentTimeMillis();
-//						System.out.println("Tiempo de cifrado mac es: " + (tiempoFinal - tiempoInicial) + "ms");
 						String hashCifradoenString = printBase64Binary(bytesHMacEncrypt);
 
 						if(hMac.equals(hashCifradoenString))
