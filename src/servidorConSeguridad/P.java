@@ -54,7 +54,7 @@ public class P {
 	 */
 	private static void generarCSV() throws FileNotFoundException
 	{
-		PrintWriter pw = new PrintWriter("./logsConSeguridad/resultadosConSeguridad ("+ (new Date()).toString().replaceAll(":", ".") + ").csv");
+		PrintWriter pw = new PrintWriter("./docs/logsConSeguridad/resultadosConSeguridad ("+ (new Date()).toString().replaceAll(":", ".") + ").csv");
 		String perdidas = "Conexiones perdidas" + ";" + conexionesPerdidas;
 		pw.println(tiempo);
 		pw.println(antes);
