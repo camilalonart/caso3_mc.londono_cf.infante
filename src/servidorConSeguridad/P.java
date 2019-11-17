@@ -54,7 +54,7 @@ public class P {
 	 */
 	private static void generarCSV() throws FileNotFoundException
 	{
-		PrintWriter pw = new PrintWriter("./resultadosConSeguridad ("+ (new Date()).toString().replaceAll(":", ".") + ").csv");
+		PrintWriter pw = new PrintWriter("./logsConSeguridad/resultadosConSeguridad ("+ (new Date()).toString().replaceAll(":", ".") + ").csv");
 		String perdidas = "Conexiones perdidas" + ";" + conexionesPerdidas;
 		pw.println(tiempo);
 		pw.println(antes);
@@ -81,12 +81,13 @@ public class P {
 		// Crea el archivo de log
 		conexionesPerdidas = 0;
 		System.out.println("Ingrese el tamano del pool de threads");
+		int cant = Integer.parseInt(br.readLine());
+		System.out.println("Ingrese la carga:");
 		int size = Integer.parseInt(br.readLine());
-		
 		File file = null;
 		keyPairServidor = S.grsa();
 		certSer = S.gc(keyPairServidor);
-		String ruta = "./resultados.txt";
+		String ruta = "./logsConSeguridad/resultados.txt";
 //		String rutalog = "./logs.txt";
 
         file = new File(ruta);
@@ -101,7 +102,7 @@ public class P {
 		// Crea el socket que escucha en el puerto seleccionado.
 		ss = new ServerSocket(ip);
 		System.out.println(MAESTRO + "Socket creado.");
-		ExecutorService pool = Executors.newFixedThreadPool(size);
+		ExecutorService pool = Executors.newFixedThreadPool(cant);
 		D.init(certSer, keyPairServidor, file);
 
 		for (int i=0;i<size;i++) {
