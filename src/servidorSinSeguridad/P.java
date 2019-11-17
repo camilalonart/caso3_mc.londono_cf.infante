@@ -52,7 +52,7 @@ public class P {
 	 */
 	private static void generarCSV() throws FileNotFoundException
 	{
-		PrintWriter pw = new PrintWriter("./resultadosSinSeguridad ("+ (new Date()).toString().replaceAll(":", ".") + ").csv");
+		PrintWriter pw = new PrintWriter("./logsSinSeguridad/resultadosSinSeguridad ("+ (new Date()).toString().replaceAll(":", ".") + ").csv");
 		String perdidas = "Conexiones perdidas" + ";" + conexionesPerdidas;
 		pw.println(tiempo);
 		pw.println(antes);
@@ -74,7 +74,8 @@ public class P {
 		int ip = Integer.parseInt(br.readLine());
 		System.out.println("Ingrese el tamano del pool de threads");
 		int size = Integer.parseInt(br.readLine());
-		
+		System.out.println("Ingrese el numero de transacciones (carga):");
+		int cant = Integer.parseInt(br.readLine());
 		System.out.println(MAESTRO + "Empezando servidor maestro en puerto " + ip);
 		// Adiciona la libreria como un proveedor de seguridad.
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());		
@@ -100,7 +101,7 @@ public class P {
 		ExecutorService pool = Executors.newFixedThreadPool(size);
 		D.init(certSer, keyPairServidor, file);
 
-		for (int i=0;i<size;i++) {
+		for (int i=0;i<cant;i++) {
 			try { 
 				Socket sc = ss.accept();
 				System.out.println(MAESTRO + "Cliente " + i + " aceptado.");
