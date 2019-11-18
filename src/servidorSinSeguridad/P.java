@@ -85,7 +85,7 @@ public class P {
 		keyPairServidor = S.grsa();
 		conexionesPerdidas = 0;
 		certSer = S.gc(keyPairServidor);
-		String ruta = "./logsSinSeguridad/resultados.txt";
+		String ruta = "./docs/logsSinSeguridad/resultados.txt";
    
         file = new File(ruta);
         if (!file.exists()) {

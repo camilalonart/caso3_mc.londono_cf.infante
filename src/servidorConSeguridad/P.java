@@ -30,11 +30,13 @@ public class P {
 	private static X509Certificate certSer; /* acceso default */
 	private static KeyPair keyPairServidor; /* acceso default */
 	private static int conexionesPerdidas;
+	private static int conexionesNoPerdidas;
+
 	public static String antes = "% Antes";
 	public static String durante = "% Durante";
 	public static String despues = "% Despues";
 	public static String tiempo = "Tiempo de transaccion (ms)";
-	
+	public static int size;
 	public static double getSystemCpuLoad() throws Exception {
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 		ObjectName name = ObjectName.getInstance("java.lang:type=OperatingSystem");
@@ -55,7 +57,7 @@ public class P {
 	private static void generarCSV() throws FileNotFoundException
 	{
 		PrintWriter pw = new PrintWriter("./docs/logsConSeguridad/resultadosConSeguridad ("+ (new Date()).toString().replaceAll(":", ".") + ").csv");
-		String perdidas = "Conexiones perdidas" + ";" + conexionesPerdidas;
+		String perdidas = "Conexiones perdidas" + ";" + (size - conexionesNoPerdidas) ;
 		pw.println(tiempo);
 		pw.println(antes);
 		pw.println(durante);
@@ -80,14 +82,15 @@ public class P {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());		
 		// Crea el archivo de log
 		conexionesPerdidas = 0;
+		conexionesNoPerdidas = 0;
 		System.out.println("Ingrese el tamano del pool de threads");
 		int cant = Integer.parseInt(br.readLine());
 		System.out.println("Ingrese la carga:");
-		int size = Integer.parseInt(br.readLine());
+		size = Integer.parseInt(br.readLine());
 		File file = null;
 		keyPairServidor = S.grsa();
 		certSer = S.gc(keyPairServidor);
-		String ruta = "./logsConSeguridad/resultados.txt";
+		String ruta = "./docs/logsConSeguridad/resultados.txt";
 //		String rutalog = "./logs.txt";
 
         file = new File(ruta);
@@ -111,6 +114,7 @@ public class P {
 				System.out.println(MAESTRO + "Cliente " + i + " aceptado.");
 				D d = new D(sc,i);
 				pool.execute(d);
+				conexionesNoPerdidas++;
 //				d.start();
 			} catch (IOException e) {
 				System.out.println(MAESTRO + "Error creando el socket cliente.");
